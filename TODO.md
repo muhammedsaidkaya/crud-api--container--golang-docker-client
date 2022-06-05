@@ -1,3 +1,2 @@
 
-* Fix Docker Run
-* Opentelemetry - Jaeger Trace Exporter
+* Fix - Opentelemetry & Jaeger Trace Exporter

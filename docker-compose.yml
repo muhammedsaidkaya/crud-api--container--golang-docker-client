@@ -12,7 +12,7 @@ services:
       - CACHE_CLEANUP_INTERVAL_TIME=10
       - CACHE_DEFAULT_EXPIRATION_TIME=10
       - LOG_FILE=logfile
-      - LOG_LEVEL=DEBUG
+      - LOG_LEVEL=INFO
       - JAEGER_HOST=jaeger
       - JAEGER_PORT=14250
     volumes:
