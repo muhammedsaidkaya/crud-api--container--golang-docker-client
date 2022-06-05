@@ -14,6 +14,9 @@ services:
       - CACHE_DEFAULT_EXPIRATION_TIME=10
       - LOG_FILE=logfile
       - LOG_LEVEL=INFO
+      - PROMETHEUS_EXPORTER_ENABLED=true
+      - PROMETHEUS_EXPORTER_PORT=2222
+      - JAEGER_EXPORTER_ENABLED=true
       - JAEGER_URL=jaeger:14268
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
@@ -23,7 +26,6 @@ services:
     ports:
       - '16686:16686'
       - '14268:14268'
-      - '6831:6831/udp'
 
   prometheus:
     image: prom/prometheus:v2.1.0
@@ -38,8 +40,6 @@ services:
       - '--web.listen-address=:9099'
     ports:
       - '9099:9099'
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
 
 volumes:
   prometheus_data:

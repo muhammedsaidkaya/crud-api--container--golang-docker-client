@@ -1,9 +1,9 @@
 
 # Web Application with Gin & Docker-client
 * A web application with golang.
-* Fetchs running containers info through docker daemon
+* Fetchs running containers info through docker daemon.
 * Keeps the information at cache instead of fetching through docker socket for each
-  request
+  requesti
 
 # Usage
 
@@ -15,21 +15,29 @@ go build main.go
 
 ## DOCKER
 ```
-docker run --rm -p 8080:8080 -v /var/run/docker.sock:/var/run/docker.sock uzumlukek/docker-client
-```
-OR
-```
 docker-compose up --build
 ```
+## Links
+* Prometheus: http://localhost:9099
+* Jaeger: http://localhost:16686
+* Exporter: http://localhost:2222/metrics
+* API: http://localhost:8080/containers
 
 # Options
-| Environment Variable | Default |
-|----------------------|---------|
-| APP_PORT             | 8080    |  
-| LOG_LEVEL            | INFO    |
-| LOG_FILE          | logfile |
-| CACHE_DEFAULT_EXPIRATION_TIME          | 10      |
-| CACHE_CLEANUP_INTERVAL_TIME          | 10      |
+| Environment Variable          | Default                         |
+|-------------------------------|---------------------------------|
+| APP_PORT                      | 8080                            |  
+| LOG_LEVEL                     | INFO                            |
+| LOG_FILE                      | logfile                         |
+| CACHE_DEFAULT_EXPIRATION_TIME | 10                              |
+| CACHE_CLEANUP_INTERVAL_TIME   | 10                              |
+| PROMETHEUS_EXPORTER_ENABLED   | false                           |
+| PROMETHEUS_EXPORTER_PORT   | 2222 (Update prometheus config) |
+ | JAEGER_EXPORTER_ENABLED | false                           |
+| JAEGER_URL       | localhost:14268                 |
+| DOCKER_HOST |                                 |
+
+
 
 # Usecases
 * **List All Containers:** Listing whole containers with a small amount of metadata

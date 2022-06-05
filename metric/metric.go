@@ -2,6 +2,7 @@ package metric
 
 import (
 	"fmt"
+	"github.com/muhammedsaidkaya/crud-api--container--golang-docker-client/helper"
 	"go.opentelemetry.io/otel/exporters/prometheus"
 	"go.opentelemetry.io/otel/metric/global"
 	"go.opentelemetry.io/otel/sdk/metric/aggregator/histogram"
@@ -33,10 +34,11 @@ func InitMeter() error {
 	global.SetMeterProvider(exporter.MeterProvider())
 
 	http.HandleFunc("/", exporter.ServeHTTP)
+	port := helper.GetEnv("PROMETHEUS_EXPORTER_PORT", "2222")
 	go func() {
-		_ = http.ListenAndServe(":2222", nil)
+		_ = http.ListenAndServe(":"+port, nil)
 	}()
 
-	fmt.Println("Prometheus server running on :2222")
+	fmt.Println("Prometheus server running on :" + port)
 	return nil
 }

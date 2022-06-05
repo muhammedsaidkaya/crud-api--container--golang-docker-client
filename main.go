@@ -29,9 +29,8 @@ var (
 func main() {
 
 	logger.InitializeLogger(helper.GetEnv("LOG_LEVEL", "INFO"), helper.GetEnv("LOG_FILE", "logfile"))
-	tracer.InitTracer()
-	metric.InitMeter()
-	createUpTimeMetric()
+	enableTracingByOption()
+	enableMetricByOption()
 
 	router := gin.New()
 	router.Use(otelgin.Middleware("gin-docker-client-api"))
@@ -46,6 +45,29 @@ func InitializeLayers() controller_layer.ContainerControllerInterface {
 	repository := repository_layer.NewContainerRepository(cache_layer.NewCache(time.Duration(cacheDefaultExpirationTime)*time.Second, time.Duration(cacheCleanUpIntervalTime)*time.Second), dockerClient)
 	service := service_layer.NewContainerService(repository)
 	return controller_layer.NewContainerController(service)
+}
+
+func enableTracingByOption() {
+	tracingEnabled := helper.GetEnv("JAEGER_EXPORTER_ENABLED", "false")
+	boolValue, err := strconv.ParseBool(tracingEnabled)
+	if err != nil {
+		log.Fatal(err)
+	}
+	if boolValue {
+		tracer.InitTracer()
+	}
+}
+
+func enableMetricByOption() {
+	metricEnabled := helper.GetEnv("PROMETHEUS_EXPORTER_ENABLED", "false")
+	boolValue, err := strconv.ParseBool(metricEnabled)
+	if err != nil {
+		log.Fatal(err)
+	}
+	if boolValue {
+		metric.InitMeter()
+		createUpTimeMetric()
+	}
 }
 
 func createUpTimeMetric() {
