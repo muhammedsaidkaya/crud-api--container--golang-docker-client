@@ -3,14 +3,14 @@ package tracer
 import (
 	"context"
 	"fmt"
+	"github.com/muhammedsaidkaya/crud-api--container--golang-docker-client/helper"
+	"github.com/muhammedsaidkaya/crud-api--container--golang-docker-client/logger"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/jaeger"
 	"go.opentelemetry.io/otel/exporters/stdout/stdouttrace"
 	"go.opentelemetry.io/otel/propagation"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	"go.opentelemetry.io/otel/trace"
-	"main/helper"
-	"main/logger"
 )
 
 var tracer = otel.Tracer("gin-server")

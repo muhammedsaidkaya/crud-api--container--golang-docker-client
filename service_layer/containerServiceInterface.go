@@ -3,7 +3,7 @@ package service_layer
 import (
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
-	"main/dto"
+	"github.com/muhammedsaidkaya/crud-api--container--golang-docker-client/dto"
 )
 
 type ContainerServiceInterface interface {

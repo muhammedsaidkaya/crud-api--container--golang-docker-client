@@ -1,4 +1,4 @@
-module main
+module github.com/muhammedsaidkaya/crud-api--container--golang-docker-client
 
 go 1.18
 

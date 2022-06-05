@@ -7,8 +7,8 @@ import (
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/client"
-	"main/cache_layer"
-	"main/logger"
+	"github.com/muhammedsaidkaya/crud-api--container--golang-docker-client/cache_layer"
+	"github.com/muhammedsaidkaya/crud-api--container--golang-docker-client/logger"
 	"strings"
 )
 

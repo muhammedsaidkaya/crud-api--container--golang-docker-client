@@ -3,13 +3,13 @@ package controller_layer
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/muhammedsaidkaya/crud-api--container--golang-docker-client/dto"
+	"github.com/muhammedsaidkaya/crud-api--container--golang-docker-client/logger"
+	"github.com/muhammedsaidkaya/crud-api--container--golang-docker-client/service_layer"
+	"github.com/muhammedsaidkaya/crud-api--container--golang-docker-client/tracer"
 	"github.com/peteprogrammer/go-automapper"
 	"go.opentelemetry.io/otel/attribute"
 	oteltrace "go.opentelemetry.io/otel/trace"
-	"main/dto"
-	"main/logger"
-	"main/service_layer"
-	"main/tracer"
 	"net/http"
 )
 

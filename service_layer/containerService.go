@@ -4,8 +4,8 @@ import (
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/go-connections/nat"
-	"main/dto"
-	"main/repository_layer"
+	"github.com/muhammedsaidkaya/crud-api--container--golang-docker-client/dto"
+	"github.com/muhammedsaidkaya/crud-api--container--golang-docker-client/repository_layer"
 	"strconv"
 	"strings"
 )
