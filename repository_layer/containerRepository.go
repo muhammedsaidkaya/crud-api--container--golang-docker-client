@@ -51,7 +51,7 @@ func (_c containerRepository) GetByID(id string) (types.Container, error) {
 		}
 		return _container, err
 	}
-	logger.GetLogger().Debug(fmt.Sprintf("Getting from cache: %v", id))
+	logger.GetLogger().Info(fmt.Sprintf("Getting from cache: %v", id))
 	return container.(types.Container), nil
 }
 

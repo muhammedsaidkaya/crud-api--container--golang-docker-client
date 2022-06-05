@@ -41,18 +41,15 @@ curl --location --request GET 'http://localhost:8080/containers/'
 curl --location --request GET 'http://localhost:8080/containers/:containerId'
 ```
 * **Run container:** Run a container as a daemon (for instance nginx)
-  * body : '{
-    "name": "test-uzumlukek",
-    "image": "uzumlukek/local-firestore:testing"
-    }'
+
 ```
 curl --location --request POST 'http://localhost:8080/containers' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "name": "test-uzumlukek-test",
     "image": "uzumlukek/local-firestore:testing",
-    "exposePort": "3000/tcp",
-    "publishPort": "3000/tcp"
+    "exposePort": "3000",
+    "publishPort": "3000"
 }'
 ```
 * **Delete Container By ID:** Delete the specified container
@@ -88,3 +85,13 @@ curl --location --request DELETE 'http://localhost:8080/containers/:containerId'
 ### Pre-commit
 * https://pre-commit.com/
 * https://github.com/dnephin/pre-commit-golang
+
+### Testing
+* https://github.com/golang/mock
+* https://github.com/gin-gonic/gin#testing
+```
+mockgen -source=service_layer/containerServiceInterface.go -destination=mock/mock_container_service.go -package=mock
+```
+
+### Regex
+* https://yourbasic.org/golang/regexp-cheat-sheet/

@@ -63,7 +63,7 @@ func (_c ContainerController) delete(c *gin.Context) {
 	id := c.Param("id")
 	err := _c.service.Delete(id)
 	if err != nil {
-		c.IndentedJSON(http.StatusNotFound, gin.H{"message": "container not found"})
+		c.IndentedJSON(http.StatusNotFound, "container not found")
 	} else {
 		c.IndentedJSON(http.StatusOK, "container removed")
 	}
