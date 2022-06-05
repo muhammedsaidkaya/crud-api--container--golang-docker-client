@@ -82,13 +82,42 @@ curl --location --request DELETE 'http://localhost:8080/containers/:containerId'
 * https://pkg.go.dev/go.opentelemetry.io/otel/exporters
 * https://pkg.go.dev/go.opentelemetry.io/otel/exporters/jaeger
 * https://github.com/open-telemetry/opentelemetry-go/blob/main/example/jaeger/main.go
-#### Manual Instrumentation
+* https://github.com/open-telemetry/opentelemetry-go/blob/main/example/prometheus/main.go
+#### Manual Trace Instrumentation
 ```
 tr := otel.Tracer("gin-gonic")
 _, span := tr.Start(c.Request.Context(), "controller")
 span.SetAttributes(attribute.Key("limit").String(limit))
 span.AddEvent("Container Controller")
 defer span.End()
+```
+#### Manual Metric Instrumentation
+```
+meter := global.Meter("custom")
+
+observerLock := new(sync.RWMutex)
+observerValueToReport := new(float64)
+observerAttrsToReport := []attribute.KeyValue{attribute.String("app", "docker-client")}
+
+gaugeObserver, err := meter.AsyncFloat64().Gauge("uptime")
+if err != nil {
+    log.Panicf("failed to initialize instrument: %v", err)
+}
+_ = meter.RegisterCallback([]instrument.Asynchronous{gaugeObserver}, func(ctx context.Context) {
+    (*observerLock).RLock()
+    value := *observerValueToReport
+    attrs := observerAttrsToReport
+    (*observerLock).RUnlock()
+    gaugeObserver.Observe(ctx, value, attrs...)
+})
+
+go func() {
+    for {
+        *observerValueToReport = *observerValueToReport + 1.0
+        time.Sleep(time.Second)
+    }
+}()
+
 ```
 ### Pre-commit
 * https://pre-commit.com/
