@@ -1,2 +1,2 @@
 
-* Fix - Opentelemetry & Jaeger Trace Exporter
+* Fix - Tests

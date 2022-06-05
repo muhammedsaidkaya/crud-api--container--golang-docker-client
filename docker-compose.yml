@@ -13,8 +13,7 @@ services:
       - CACHE_DEFAULT_EXPIRATION_TIME=10
       - LOG_FILE=logfile
       - LOG_LEVEL=INFO
-      - JAEGER_HOST=jaeger
-      - JAEGER_PORT=14250
+      - JAEGER_URL=jaeger:14268
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
 
@@ -22,5 +21,5 @@ services:
     image: jaegertracing/all-in-one:1.9
     ports:
       - '16686:16686'
-      - '14250:14250'
+      - '14268:14268'
       - '6831:6831/udp'

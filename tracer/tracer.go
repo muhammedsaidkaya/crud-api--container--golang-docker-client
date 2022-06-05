@@ -1,48 +1,48 @@
 package tracer
 
 import (
-	"context"
-	"fmt"
 	"github.com/muhammedsaidkaya/crud-api--container--golang-docker-client/helper"
-	"github.com/muhammedsaidkaya/crud-api--container--golang-docker-client/logger"
 	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/exporters/jaeger"
-	"go.opentelemetry.io/otel/exporters/stdout/stdouttrace"
 	"go.opentelemetry.io/otel/propagation"
-	sdktrace "go.opentelemetry.io/otel/sdk/trace"
-	"go.opentelemetry.io/otel/trace"
+	"go.opentelemetry.io/otel/sdk/resource"
+	tracesdk "go.opentelemetry.io/otel/sdk/trace"
+	semconv "go.opentelemetry.io/otel/semconv/v1.10.0"
+	"log"
 )
 
-var tracer = otel.Tracer("gin-server")
+var (
+	service     = helper.GetEnv("SERVICE_NAME", "docker-client")
+	environment = helper.GetEnv("ENVIRONMENT", "dev")
+)
 
-func InitializeTracer() {
-	tp, err := initTracer()
+func InitTracer() {
+	tp, err := tracerProvider("http://" + helper.GetEnv("JAEGER_URL", "localhost:14268") + "/api/traces")
 	if err != nil {
-		logger.GetLogger().Fatal(fmt.Sprintf("%v", err))
+		log.Fatal(err)
 	}
-	defer func() {
-		if err := tp.Shutdown(context.Background()); err != nil {
-			logger.GetLogger().Error(fmt.Sprintf("Error shutting down tracer provider: %v", err))
-		}
-	}()
+	// Register our TracerProvider as the global so any imported
+	// instrumentation in the future will default to using it.
+	otel.SetTracerProvider(tp)
+	otel.SetTextMapPropagator(propagation.NewCompositeTextMapPropagator(propagation.TraceContext{}, propagation.Baggage{}))
 }
 
-func initTracer() (*sdktrace.TracerProvider, error) {
-	jaegerExporter, err := jaeger.New(jaeger.WithAgentEndpoint(jaeger.WithAgentHost(helper.GetEnv("JAEGER_HOST", "localhost")), jaeger.WithAgentPort(helper.GetEnv("JAEGER_PORT", "14250"))))
-	stdoutExporter, _ := stdouttrace.New(stdouttrace.WithPrettyPrint())
+func tracerProvider(url string) (*tracesdk.TracerProvider, error) {
+	// Create the Jaeger exporter
+	exp, err := jaeger.New(jaeger.WithCollectorEndpoint(jaeger.WithEndpoint(url)))
 	if err != nil {
 		return nil, err
 	}
-	tp := sdktrace.NewTracerProvider(
-		sdktrace.WithSampler(sdktrace.AlwaysSample()),
-		sdktrace.WithBatcher(jaegerExporter),
-		sdktrace.WithBatcher(stdoutExporter),
+	tp := tracesdk.NewTracerProvider(
+		// Always be sure to batch in production.
+		tracesdk.WithBatcher(exp),
+		// Record information about this application in a Resource.
+		tracesdk.WithResource(resource.NewWithAttributes(
+			semconv.SchemaURL,
+			semconv.ServiceNameKey.String(service),
+			attribute.String("environment", environment),
+		)),
 	)
-	otel.SetTracerProvider(tp)
-	otel.SetTextMapPropagator(propagation.NewCompositeTextMapPropagator(propagation.TraceContext{}, propagation.Baggage{}))
 	return tp, nil
-}
-
-func GetTracer() trace.Tracer {
-	return tracer
 }

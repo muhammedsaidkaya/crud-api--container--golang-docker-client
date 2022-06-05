@@ -18,7 +18,7 @@ import (
 func main() {
 
 	logger.InitializeLogger(helper.GetEnv("LOG_LEVEL", "INFO"), helper.GetEnv("LOG_FILE", "logfile"))
-	tracer.InitializeTracer()
+	tracer.InitTracer()
 	router := gin.New()
 	router.Use(otelgin.Middleware("gin-docker-client-api"))
 	InitializeLayers().Setup(router)

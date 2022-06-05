@@ -81,7 +81,15 @@ curl --location --request DELETE 'http://localhost:8080/containers/:containerId'
 * https://github.com/open-telemetry/opentelemetry-go-contrib/tree/main/instrumentation/github.com/gin-gonic/gin/otelgin
 * https://pkg.go.dev/go.opentelemetry.io/otel/exporters
 * https://pkg.go.dev/go.opentelemetry.io/otel/exporters/jaeger
-
+* https://github.com/open-telemetry/opentelemetry-go/blob/main/example/jaeger/main.go
+#### Manual Instrumentation
+```
+tr := otel.Tracer("gin-gonic")
+_, span := tr.Start(c.Request.Context(), "controller")
+span.SetAttributes(attribute.Key("limit").String(limit))
+span.AddEvent("Container Controller")
+defer span.End()
+```
 ### Pre-commit
 * https://pre-commit.com/
 * https://github.com/dnephin/pre-commit-golang

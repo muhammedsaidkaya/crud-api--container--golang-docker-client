@@ -6,10 +6,7 @@ import (
 	"github.com/muhammedsaidkaya/crud-api--container--golang-docker-client/dto"
 	"github.com/muhammedsaidkaya/crud-api--container--golang-docker-client/logger"
 	"github.com/muhammedsaidkaya/crud-api--container--golang-docker-client/service_layer"
-	"github.com/muhammedsaidkaya/crud-api--container--golang-docker-client/tracer"
 	"github.com/peteprogrammer/go-automapper"
-	"go.opentelemetry.io/otel/attribute"
-	oteltrace "go.opentelemetry.io/otel/trace"
 	"net/http"
 )
 
@@ -33,39 +30,43 @@ func (_c ContainerController) getByID(c *gin.Context) {
 	id := c.Param("id")
 	container, err := _c.service.GetByID(id)
 	if err != nil {
-		c.IndentedJSON(http.StatusNotFound, gin.H{"message": err})
+		c.IndentedJSON(http.StatusNotFound, gin.H{"data": nil, "message": fmt.Sprintf("%v", err)})
 	} else {
 		var metadata dto.ContainerMetadata
 		automapper.Map(container, &metadata)
-		c.IndentedJSON(http.StatusOK, metadata)
+		c.IndentedJSON(http.StatusOK, gin.H{"data": metadata, "message": "Container found"})
 	}
 }
 
 func (_c ContainerController) getAll(c *gin.Context) {
 	limit := c.Query("limit")
-	_, span := tracer.GetTracer().Start(c.Request.Context(), "getAll", oteltrace.WithAttributes(attribute.String("limit", limit)))
-	defer span.End()
+
+	/*tr := otel.Tracer("gin-gonic")
+	_, span := tr.Start(c.Request.Context(), "controller")
+	span.SetAttributes(attribute.Key("limit").String(limit))
+	span.AddEvent()
+	defer span.End()*/
 
 	containers, err := _c.service.GetAll(limit)
 	if err != nil {
 		logger.GetLogger().Panic(fmt.Sprintf("%v", err))
 	}
-	var metadataList []dto.ContainerMetadata
+	metadataList := make([]dto.ContainerMetadata, 0)
 	for _, container := range containers {
 		var metadata dto.ContainerMetadata
 		automapper.Map(container, &metadata)
 		metadataList = append(metadataList, metadata)
 	}
-	c.IndentedJSON(http.StatusOK, metadataList)
+	c.IndentedJSON(http.StatusOK, gin.H{"data": metadataList})
 }
 
 func (_c ContainerController) delete(c *gin.Context) {
 	id := c.Param("id")
 	err := _c.service.Delete(id)
 	if err != nil {
-		c.IndentedJSON(http.StatusNotFound, "container not found")
+		c.IndentedJSON(http.StatusNotFound, gin.H{"data": id, "message": "Container not found"})
 	} else {
-		c.IndentedJSON(http.StatusOK, "container removed")
+		c.IndentedJSON(http.StatusOK, gin.H{"data": id, "message": "Container removed"})
 	}
 }
 
@@ -76,7 +77,8 @@ func (_c ContainerController) create(c *gin.Context) {
 	}
 	container, err := _c.service.Create(newContainerInput)
 	if err != nil {
-		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": err})
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"data": nil, "message": fmt.Sprintf("%v", err)})
+		return
 	}
-	c.IndentedJSON(http.StatusCreated, container)
+	c.IndentedJSON(http.StatusCreated, gin.H{"data": container, "message": "Container created"})
 }
