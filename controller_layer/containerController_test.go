@@ -23,7 +23,6 @@ func TestHandler(t *testing.T) {
 	t.Run("delete method tests", func(t *testing.T) {
 		t.Run("success", func(t *testing.T) {
 			id := "ID-123"
-			expected := "\"container removed\""
 
 			mockService.EXPECT().
 				Delete(id).
@@ -36,15 +35,16 @@ func TestHandler(t *testing.T) {
 			request, _ := http.NewRequest(http.MethodDelete, fmt.Sprintf("%s/%s", endpoint, id), http.NoBody)
 			router.ServeHTTP(response, request)
 
-			actual := response.Body.String()
+			var jsonMap map[string]interface{}
+			json.Unmarshal(response.Body.Bytes(), &jsonMap)
 
 			assert.Equal(t, http.StatusOK, response.Code)
-			assert.Equal(t, expected, actual)
+			assert.Equal(t, id, jsonMap["response"].(map[string]interface{})["data"].(string))
+			assert.Equal(t, "Container removed.", jsonMap["response"].(map[string]interface{})["message"].(string))
 		})
 
 		t.Run("not found", func(t *testing.T) {
 			id := "ID-123"
-			expected := "\"container not found\""
 
 			mockService.EXPECT().
 				Delete(id).
@@ -57,8 +57,12 @@ func TestHandler(t *testing.T) {
 			request, _ := http.NewRequest(http.MethodDelete, fmt.Sprintf("%s/%s", endpoint, id), http.NoBody)
 			router.ServeHTTP(response, request)
 
+			var jsonMap map[string]interface{}
+			json.Unmarshal(response.Body.Bytes(), &jsonMap)
+
 			assert.Equal(t, http.StatusNotFound, response.Code)
-			assert.Equal(t, expected, response.Body.String())
+			assert.Equal(t, id, jsonMap["response"].(map[string]interface{})["data"].(string))
+			assert.Equal(t, "Container not found.", jsonMap["response"].(map[string]interface{})["message"].(string))
 		})
 
 	})
@@ -79,11 +83,11 @@ func TestHandler(t *testing.T) {
 			request, _ := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/%s", endpoint, id), http.NoBody)
 			router.ServeHTTP(response, request)
 
-			var actual dto.ContainerMetadata
-			json.Unmarshal(response.Body.Bytes(), &actual)
+			var jsonMap map[string]interface{}
+			json.Unmarshal(response.Body.Bytes(), &jsonMap)
 
 			assert.Equal(t, http.StatusOK, response.Code)
-			assert.Equal(t, expected.ID, actual.ID)
+			assert.Equal(t, expected.ID, jsonMap["response"].(map[string]interface{})["data"].(map[string]interface{})["Id"].(string))
 		})
 
 		t.Run("not found", func(t *testing.T) {
@@ -99,7 +103,11 @@ func TestHandler(t *testing.T) {
 			request, _ := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/%s", endpoint, id), http.NoBody)
 			router.ServeHTTP(response, request)
 
+			var jsonMap map[string]interface{}
+			json.Unmarshal(response.Body.Bytes(), &jsonMap)
+
 			assert.Equal(t, http.StatusNotFound, response.Code)
+			assert.Nil(t, jsonMap["response"].(map[string]interface{})["data"])
 		})
 	})
 }

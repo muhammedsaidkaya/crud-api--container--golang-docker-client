@@ -30,11 +30,12 @@ func (_c ContainerController) getByID(c *gin.Context) {
 	id := c.Param("id")
 	container, err := _c.service.GetByID(id)
 	if err != nil {
-		c.IndentedJSON(http.StatusNotFound, gin.H{"data": nil, "message": fmt.Sprintf("%v", err)})
+		c.IndentedJSON(http.StatusNotFound, gin.H{"response": dto.Response{Data: nil, Message: fmt.Sprintf("%v", err)}})
 	} else {
 		var metadata dto.ContainerMetadata
 		automapper.Map(container, &metadata)
-		c.IndentedJSON(http.StatusOK, gin.H{"data": metadata, "message": "Container found"})
+
+		c.IndentedJSON(http.StatusOK, gin.H{"response": dto.Response{Data: metadata, Message: "Container found."}})
 	}
 }
 
@@ -57,16 +58,16 @@ func (_c ContainerController) getAll(c *gin.Context) {
 		automapper.Map(container, &metadata)
 		metadataList = append(metadataList, metadata)
 	}
-	c.IndentedJSON(http.StatusOK, gin.H{"data": metadataList})
+	c.IndentedJSON(http.StatusOK, gin.H{"response": dto.Response{Data: metadataList}})
 }
 
 func (_c ContainerController) delete(c *gin.Context) {
 	id := c.Param("id")
 	err := _c.service.Delete(id)
 	if err != nil {
-		c.IndentedJSON(http.StatusNotFound, gin.H{"data": id, "message": "Container not found"})
+		c.IndentedJSON(http.StatusNotFound, gin.H{"response": dto.Response{Data: id, Message: "Container not found."}})
 	} else {
-		c.IndentedJSON(http.StatusOK, gin.H{"data": id, "message": "Container removed"})
+		c.IndentedJSON(http.StatusOK, gin.H{"response": dto.Response{Data: id, Message: "Container removed."}})
 	}
 }
 
@@ -77,8 +78,8 @@ func (_c ContainerController) create(c *gin.Context) {
 	}
 	container, err := _c.service.Create(newContainerInput)
 	if err != nil {
-		c.IndentedJSON(http.StatusBadRequest, gin.H{"data": nil, "message": fmt.Sprintf("%v", err)})
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"response": dto.Response{Data: nil, Message: fmt.Sprintf("%v", err)}})
 		return
 	}
-	c.IndentedJSON(http.StatusCreated, gin.H{"data": container, "message": "Container created"})
+	c.IndentedJSON(http.StatusCreated, gin.H{"response": dto.Response{Data: container, Message: "Container created."}})
 }
