@@ -22,10 +22,6 @@ import (
 	"time"
 )
 
-var (
-	lemonsKey = attribute.Key("ex.com/lemons")
-)
-
 func main() {
 
 	logger.InitializeLogger(helper.GetEnv("LOG_LEVEL", "INFO"), helper.GetEnv("LOG_FILE", "logfile"))
