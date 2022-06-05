@@ -9,7 +9,7 @@
 
 ## GO
 ```
-go build cmd/main.go
+go build main.go
 ./main
 ```
 
